@@ -1,0 +1,26 @@
+version: '2.1'
+
+services:
+  openhab:
+    image: "openhab/openhab:2.2.0-snapshot-amd64-debian"
+    restart: always
+#    network_mode: host
+    tty: true
+    volumes:
+#      - "/etc/localtime:/etc/localtime:ro"
+#      - "/etc/timezone:/etc/timezone:ro"
+      - ./openhab/openhab_addons:/openhab/addons
+      - ./openhab/openhab_conf:/openhab/conf
+      - ./openhab/openhab_userdata:/openhab/userdata
+    environment:
+      OPENHAB_HTTP_PORT: "8080"
+      OPENHAB_HTTPS_PORT: "8443"
+      
+    devices:
+    # adafruit playboard
+      - "/dev/ttyACM0:/dev/ttyACM0:rwm"
+    # nfc TODO
+    
+    ports:
+      - "8080:8080"
+      - "8443:8443"

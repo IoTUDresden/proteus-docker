@@ -1,0 +1,9 @@
+data/
+openhab/openhab_userdata/cache/
+openhab/openhab_userdata/config/
+openhab/openhab_userdata/etc/
+openhab/openhab_userdata/jsondb/
+openhab/openhab_userdata/kar/
+openhab/openhab_userdata/logs/
+openhab/openhab_userdata/tmp/
+openhab/openhab_userdata/semantic/tdb/

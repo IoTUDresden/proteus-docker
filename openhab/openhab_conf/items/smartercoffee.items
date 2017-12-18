@@ -1,0 +1,7 @@
+Group gCoffee "Smarter Coffee"
+
+// using ibrew rest api
+String smartercoffee_coffeemachine_ready_1          "Ready"         (gCoffee) {http="<[coffeeStateCache:3000:JSONPATH($.status.ready)]"}  
+String smartercoffee_coffeemachine_waterLevel_1     "Water Level"    (gCoffee) {http="<[coffeeStateCache:3000:JSONPATH($.sensors.waterlevel)]"}
+Switch smartercoffee_coffeemachine_brew_1           "Brew"           (gCoffee) {http=">[ON:GET:http://localhost:2080/api/192.168.1.4/start]", autoupdate="false"}
+

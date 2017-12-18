@@ -1,0 +1,118 @@
+# This composes a complete distribution of the PROtEUS
+# setup including the following services:
+#
+# - elasticsearch
+# - kibana
+# - neo4j
+# - feedback-service
+# - proteus
+version: '2'
+
+services:
+
+  elasticsearch:
+    image: elasticsearch:1.7.4
+    container_name: elasticsearch
+
+    volumes:
+      - ./data/elasticsearch:/usr/share/elasticsearch/data
+
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+  kibana:
+    image: kibana:4.1.5
+    container_name: kibana
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+
+    depends_on:
+      - elasticsearch
+
+    ports:
+      - "5601:5601"
+
+  neo4j:
+    image: neo4j:2.3.2
+    container_name: neo4j
+    environment:
+      NEO4J_AUTH: none
+
+    volumes:
+      - ./data/neo4j:/data
+
+    ports:
+      - "7474:7474"
+
+
+  service:
+    image: iotudresden/feedback-service
+    container_name: feedback
+    environment:
+      SPRING_DATA_ELASTICSEARCH_CLUSTER-NODES: elasticsearch:9300
+      METRICS_REPORTER_ELASTICSEARCH_NODES: elasticsearch:9200
+      SERVICE_KNOWLEDGE_NEO4J_URL: http://neo4j:7474
+      SERVER_PORT: 9000
+      # OPENHAB_HOST: ${OPENHAB_HOST}
+      LOGGING_LEVEL_DE_TUD: DEBUG
+
+    depends_on:
+      - elasticsearch
+      - neo4j
+
+    ports:
+      - "9000:9000"
+      
+  openhab:
+    image: "openhab/openhab:2.2.0-snapshot-amd64-debian"
+    restart: always
+#    network_mode: host
+    tty: true
+    volumes:
+#      - "/etc/localtime:/etc/localtime:ro"
+#      - "/etc/timezone:/etc/timezone:ro"
+      - ./openhab/openhab_addons:/openhab/addons
+      - ./openhab/openhab_conf:/openhab/conf
+      - ./openhab/openhab_userdata:/openhab/userdata
+    environment:
+      OPENHAB_HTTP_PORT: "8080"
+      OPENHAB_HTTPS_PORT: "8443"
+      
+    devices:
+    # adafruit playboard
+      - "/dev/ttyACM0:/dev/ttyACM0:rwm"
+    # nfc TODO
+    
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+     
+     
+  proteus:
+    image: iotudresden/vicci-runtime
+    container_name: vicci-runtime
+    environment:
+      PROTEUS_WAMP_PORT: 8081
+      PROTEUS_WAMP_NAMESPACE: vicciWs
+      PROTEUS_WAMP_REALM_NAME: vicciRealm
+      # PROTEUS_LOG_LEVEL: debug
+      # PROTEUS_DEVICES:  
+      # PROTEUS_SUPER_PEER_IP: localhost
+      PROTEUS_IP_FILTER: 1
+      # ELASTICSEARCH_HOST: 172.17.0.1:9200
+      # OPENHAB_URI: http://localhost:8080
+      # START_CEP_ENGINE: true
+      # FEEDBACK_CONTEXT_URI: http://localhost:9000/contexts/2048
+      # FEEDBACK_SERVICE_URI: http://localhost:9000
+      # DEPLOY_EXISTING_PROCESSMODELS: false
+    
+    depends_on:
+      - elasticsearch
+      - neo4j
+      - service
+      - openhab
+
+    ports:
+      - "8081:8081"
+     

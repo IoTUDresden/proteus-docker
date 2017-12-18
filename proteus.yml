@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+
+  proteus:
+    image: iotudresden/vicci-runtime
+    container_name: vicci-runtime
+    environment:
+      PROTEUS_WAMP_PORT: 8081
+      PROTEUS_WAMP_NAMESPACE: vicciWs
+      PROTEUS_WAMP_REALM_NAME: vicciRealm
+      # PROTEUS_LOG_LEVEL: debug
+      # PROTEUS_DEVICES:  
+      # PROTEUS_SUPER_PEER_IP: localhost
+      PROTEUS_IP_FILTER: 1
+      # ELASTICSEARCH_HOST: 172.17.0.1:9200
+      # OPENHAB_URI: http://localhost:8080
+      # START_CEP_ENGINE: true
+      # FEEDBACK_CONTEXT_URI: http://localhost:9000/contexts/2048
+      # FEEDBACK_SERVICE_URI: http://localhost:9000
+      # DEPLOY_EXISTING_PROCESSMODELS: false
+
+    ports:
+      - "8081:8081"
